@@ -65,9 +65,9 @@ public class AuthView extends javax.swing.JFrame {
         jTextField3 = new javax.swing.JTextField();
         jButton15 = new javax.swing.JButton();
         jLabel19 = new javax.swing.JLabel();
-        jTextField4 = new javax.swing.JTextField();
+        jTextField4 = new javax.swing.JPasswordField();
         jLabel20 = new javax.swing.JLabel();
-        jTextField5 = new javax.swing.JTextField();
+        jTextField5 = new javax.swing.JPasswordField();
         jButton19 = new javax.swing.JButton();
         forgotpasswordPannel = new javax.swing.JPanel();
         jPanel12 = new javax.swing.JPanel();
@@ -697,20 +697,28 @@ public class AuthView extends javax.swing.JFrame {
         if (validateSignup()) {
             String username = jTextField2.getText().trim();
             String email = jTextField3.getText().trim();
-            String password = jTextField4.getText();
+            String password = new String(((javax.swing.JPasswordField)jTextField4).getPassword());
             
-            // TODO: Add user registration logic to controller
-            JOptionPane.showMessageDialog(
-                this,
-                "Account created successfully! Please login.",
-                "Success",
-                JOptionPane.INFORMATION_MESSAGE
-            );
-            
-            // Clear form and switch to login
-            clearSignupForm();
-            java.awt.CardLayout cardLayout = (java.awt.CardLayout) mainPannel.getLayout();
-            cardLayout.show(mainPannel, "card2");
+            if (controller.registerUser(username, email, password)) {
+                JOptionPane.showMessageDialog(
+                    this,
+                    "Account created successfully! Please login.",
+                    "Success",
+                    JOptionPane.INFORMATION_MESSAGE
+                );
+                
+                // Clear form and switch to login
+                clearSignupForm();
+                java.awt.CardLayout cardLayout = (java.awt.CardLayout) mainPannel.getLayout();
+                cardLayout.show(mainPannel, "card2");
+            } else {
+                JOptionPane.showMessageDialog(
+                    this,
+                    "User with this email already exists!",
+                    "Registration Failed",
+                    JOptionPane.ERROR_MESSAGE
+                );
+            }
         }
     }//GEN-LAST:event_jButton19ActionPerformed
 
@@ -794,8 +802,8 @@ public class AuthView extends javax.swing.JFrame {
     private boolean validateSignup() {
         String username = jTextField2.getText().trim();
         String email = jTextField3.getText().trim();
-        String password = jTextField4.getText();
-        String confirmPassword = jTextField5.getText();
+        String password = new String(((javax.swing.JPasswordField)jTextField4).getPassword());
+        String confirmPassword = new String(((javax.swing.JPasswordField)jTextField5).getPassword());
         
         if (username.isEmpty()) {
             showError("Username field cannot be empty");

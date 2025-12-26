@@ -905,7 +905,7 @@ public class AuthView extends javax.swing.JFrame {
         if (validateSignup()) {
             String username = jTextField2.getText().trim();
             String email = jTextField3.getText().trim();
-            String password = new String(jPasswordField2.getPassword());
+            String password = new String(jPasswordField4.getPassword());
             
             if (controller.registerUser(username, email, password)) {
                 JOptionPane.showMessageDialog(
@@ -951,20 +951,36 @@ public class AuthView extends javax.swing.JFrame {
     }//GEN-LAST:event_jButton18ActionPerformed
 
     private void jButton4ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton4ActionPerformed
-        // Add User
+        // Add User - Only username and email required
         String username = JOptionPane.showInputDialog(this, "Enter Username:");
         if (username != null && !username.trim().isEmpty()) {
             String email = JOptionPane.showInputDialog(this, "Enter Email:");
             if (email != null && !email.trim().isEmpty()) {
-                String password = JOptionPane.showInputDialog(this, "Enter Password:");
-                if (password != null && !password.trim().isEmpty()) {
-                    if (controller.registerUser(username.trim(), email.trim(), password)) {
-                        JOptionPane.showMessageDialog(this, "User added successfully!");
-                        loadUsersIntoTable();
-                        updateUserStatistics();
-                    } else {
+                // Validate email format
+                if (!isValidEmail(email.trim())) {
+                    JOptionPane.showMessageDialog(this, "Please enter a valid email address!");
+                    return;
+                }
+                
+                // Check for duplicate email in table
+                javax.swing.table.DefaultTableModel model = (javax.swing.table.DefaultTableModel) jTable1.getModel();
+                for (int i = 0; i < model.getRowCount(); i++) {
+                    String existingEmail = (String) model.getValueAt(i, 2);
+                    if (existingEmail.equals(email.trim())) {
                         JOptionPane.showMessageDialog(this, "User with this email already exists!");
+                        return;
                     }
+                }
+                
+                // Generate default password for admin-created users
+                String defaultPassword = "User123";
+                
+                if (controller.registerUser(username.trim(), email.trim(), defaultPassword)) {
+                    JOptionPane.showMessageDialog(this, "User added successfully!\nDefault password: " + defaultPassword);
+                    loadUsersIntoTable();
+                    updateUserStatistics();
+                } else {
+                    JOptionPane.showMessageDialog(this, "Failed to add user. Please try again.");
                 }
             }
         }
@@ -1051,8 +1067,8 @@ public class AuthView extends javax.swing.JFrame {
     private boolean validateSignup() {
         String username = jTextField2.getText().trim();
         String email = jTextField3.getText().trim();
-        String password = new String(jPasswordField2.getPassword());
-        String confirmPassword = new String(jPasswordField3.getPassword());
+        String password = new String(jPasswordField4.getPassword());
+        String confirmPassword = new String(jPasswordField5.getPassword());
         
         if (username.isEmpty()) {
             showError("Username field cannot be empty");
@@ -1086,31 +1102,31 @@ public class AuthView extends javax.swing.JFrame {
         
         if (password.isEmpty()) {
             showError("Password field cannot be empty");
-            jPasswordField2.requestFocus();
+            jPasswordField4.requestFocus();
             return false;
         }
         
         if (password.length() < 6) {
             showError("Password must be at least 6 characters long");
-            jPasswordField2.requestFocus();
+            jPasswordField4.requestFocus();
             return false;
         }
         
         if (!isStrongPassword(password)) {
             showError("Password must contain at least one uppercase letter, one lowercase letter, and one number");
-            jPasswordField2.requestFocus();
+            jPasswordField4.requestFocus();
             return false;
         }
         
         if (confirmPassword.isEmpty()) {
             showError("Please confirm your password");
-            jPasswordField3.requestFocus();
+            jPasswordField5.requestFocus();
             return false;
         }
         
         if (!password.equals(confirmPassword)) {
             showError("Passwords do not match");
-            jPasswordField3.requestFocus();
+            jPasswordField5.requestFocus();
             return false;
         }
         
@@ -1119,8 +1135,8 @@ public class AuthView extends javax.swing.JFrame {
     
     private boolean validatePasswordReset() {
         String email = jTextField6.getText().trim();
-        String newPassword = new String(jPasswordField4.getPassword());
-        String confirmPassword = new String(jPasswordField5.getPassword());
+        String newPassword = new String(jPasswordField2.getPassword());
+        String confirmPassword = new String(jPasswordField3.getPassword());
         
         if (email.isEmpty()) {
             showError("Email field cannot be empty");
@@ -1136,31 +1152,31 @@ public class AuthView extends javax.swing.JFrame {
         
         if (newPassword.isEmpty()) {
             showError("New password field cannot be empty");
-            jPasswordField4.requestFocus();
+            jPasswordField2.requestFocus();
             return false;
         }
         
         if (newPassword.length() < 6) {
             showError("Password must be at least 6 characters long");
-            jPasswordField4.requestFocus();
+            jPasswordField2.requestFocus();
             return false;
         }
         
         if (!isStrongPassword(newPassword)) {
             showError("Password must contain at least one uppercase letter, one lowercase letter, and one number");
-            jPasswordField4.requestFocus();
+            jPasswordField2.requestFocus();
             return false;
         }
         
         if (confirmPassword.isEmpty()) {
             showError("Please confirm your new password");
-            jPasswordField5.requestFocus();
+            jPasswordField3.requestFocus();
             return false;
         }
         
         if (!newPassword.equals(confirmPassword)) {
             showError("Passwords do not match");
-            jPasswordField5.requestFocus();
+            jPasswordField3.requestFocus();
             return false;
         }
         
@@ -1188,14 +1204,14 @@ public class AuthView extends javax.swing.JFrame {
     private void clearSignupForm() {
         jTextField2.setText("");
         jTextField3.setText("");
-        jPasswordField2.setText("");
-        jPasswordField3.setText("");
+        jPasswordField4.setText("");
+        jPasswordField5.setText("");
     }
     
     private void clearPasswordResetForm() {
         jTextField6.setText("");
-        jPasswordField4.setText("");
-        jPasswordField5.setText("");
+        jPasswordField2.setText("");
+        jPasswordField3.setText("");
     }
     
     private void jButton6ActionPerformed(java.awt.event.ActionEvent evt) {

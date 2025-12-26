@@ -46,6 +46,36 @@ public class Controller {
         return true;
     }
     
+    public boolean isAdmin(String email) {
+        return "admin@eatwise.com".equals(email);
+    }
+    
+    public int getTotalUsers() {
+        return users.size() - 1; // Exclude admin
+    }
+    
+    public int getRecentUsers() {
+        return Math.min(5, users.size() - 1); // Last 5 users excluding admin
+    }
+    
+    public String getUserList() {
+        StringBuilder sb = new StringBuilder();
+        sb.append(String.format("%-20s %-30s %-15s%n", "Username", "Email", "Type"));
+        sb.append("-".repeat(65)).append("\n");
+        
+        for (Model user : users) {
+            String type = isAdmin(user.getEmail()) ? "Admin" : "User";
+            sb.append(String.format("%-20s %-30s %-15s%n", 
+                user.getUsername(), user.getEmail(), type));
+        }
+        
+        return sb.toString();
+    }
+    
+    public java.util.List<Model> getUsers() {
+        return new ArrayList<>(users);
+    }
+    
     private void saveUserToFile(Model user) {
         try (BufferedWriter writer = new BufferedWriter(new FileWriter(USERS_FILE, true))) {
             writer.write(user.getUsername() + "," + user.getEmail() + "," + user.getPassword());
